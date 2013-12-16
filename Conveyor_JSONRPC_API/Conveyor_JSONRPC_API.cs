@@ -507,7 +507,7 @@ namespace Conveyor_JSONRPC_API
         {
             JObject rpcCall = new JObject();
             rpcCall.Add(new JProperty("jsonrpc", "2.0"));
-            rpcCall.Add(new JProperty("rpcid", rpcid.ToString()));
+            rpcCall.Add(new JProperty("id", rpcid.ToString()));
             rpcCall.Add(new JProperty("method", MethodName));
             //rpcCall.Add(new JProperty("method", "add"));
 
@@ -766,7 +766,7 @@ namespace Conveyor_JSONRPC_API
         {
             JObject rpcCall = new JObject();
             rpcCall.Add(new JProperty("jsonrpc", "2.0"));
-            rpcCall.Add(new JProperty("rpcid", rpcid.ToString()));
+            rpcCall.Add(new JProperty("id", rpcid.ToString()));
             rpcCall.Add(new JProperty("method", MethodName));
             //rpcCall.Add(new JProperty("method", "add"));
 
@@ -799,11 +799,12 @@ namespace Conveyor_JSONRPC_API
      * object to encapsulate messages from the server, which will be formatted in an rpc syntax
      * 
      */
-    public class JsonRpcResult
+    public class JsonRpcResult<T>
     {
         //Example Reply	"{\"jsonrpc\": \"2.0\", \"result\": \"world\", \"rpcid\": \"2\"}"	string
         public double jsonrpc { get; set; }
-        public string result { get; set; }
+        //public string result { get; set; }
+        public T result { get; set; }
         public int rpcid { get; set; }
     }
 }

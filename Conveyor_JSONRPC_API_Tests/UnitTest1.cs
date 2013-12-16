@@ -16,6 +16,7 @@ namespace Conveyor_JSONRPC_API_Tests
         IPEndPoint ipEndPoint;
         TcpClient tcpClient;
         Stream dataStream;
+        int rpcid;
 
         public UnitTest1()
         {
@@ -23,12 +24,15 @@ namespace Conveyor_JSONRPC_API_Tests
             tcpClient = new TcpClient();
             tcpClient.Connect(ipEndPoint);
             dataStream = tcpClient.GetStream();
+            rpcid = 0;
+            //Hello();
         }
-
         [TestMethod]
-        public void A_Hello()
+        public void Hello()
         {
-            JsonRpcResult Response = CallMethod(dataStream, tcpClient, ServerAPI.Hello(2));
+            rpcid++;
+            string RPCHello = ServerAPI.Hello(rpcid);
+            JsonRpcResult<string> Response = CallMethod<string>(RPCHello);
             if (Response.result.Equals("world"))
             {
                 return;
@@ -39,7 +43,8 @@ namespace Conveyor_JSONRPC_API_Tests
         [TestMethod]
         public void GetPrinters()
         {
-            JsonRpcResult Response = CallMethod(dataStream, tcpClient, ServerAPI.GetPrinters(3));
+            rpcid++;
+            JsonRpcResult Response = CallMethod(ServerAPI.GetPrinters(rpcid));
             if (Response.result.Equals("world"))
             {
                 return;
@@ -47,14 +52,19 @@ namespace Conveyor_JSONRPC_API_Tests
             throw (new Exception());
         }
         
-        public static JsonRpcResult CallMethod(Stream dataStream, TcpClient tcpClient, string JsonMethod)
+        public JsonRpcResult<T> CallMethod<T>(string JsonMethod)
         {
             byte[] byteArray = Encoding.ASCII.GetBytes(JsonMethod);
             dataStream.Write(byteArray, 0, byteArray.Length);
+            //StreamWriter writer = new StreamWriter(dataStream);
+            //writer.WriteLine(dataStream);
+            //writer.Flush();
+            //writer.Close();
             byte[] bytesToRead = new byte[tcpClient.ReceiveBufferSize];
             int bytesRead = dataStream.Read(bytesToRead, 0, bytesToRead.Length);
             string Reply = Encoding.ASCII.GetString(bytesToRead, 0, bytesRead);
-            return JsonConvert.DeserializeObject<JsonRpcResult>(Reply);
+            //string Reply = new StreamReader(dataStream).ReadToEnd();
+            return JsonConvert.DeserializeObject<JsonRpcResult<T>>(Reply);
         }
     }
 }
