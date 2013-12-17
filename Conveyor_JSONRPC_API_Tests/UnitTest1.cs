@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.IO;
 using System.Text;
 using Conveyor_JSONRPC_API;
+using Conveyor_JSONRPC_API.Types;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
@@ -25,9 +26,9 @@ namespace Conveyor_JSONRPC_API_Tests
             tcpClient.Connect(ipEndPoint);
             dataStream = tcpClient.GetStream();
             rpcid = 0;
-            //Hello();
+            Hello();
         }
-        [TestMethod]
+        //[TestMethod]
         public void Hello()
         {
             rpcid++;
@@ -44,7 +45,7 @@ namespace Conveyor_JSONRPC_API_Tests
         public void GetPrinters()
         {
             rpcid++;
-            JsonRpcResult Response = CallMethod(ServerAPI.GetPrinters(rpcid));
+            JsonRpcResult<printer[]> Response = CallMethod<printer[]>(ServerAPI.GetPrinters(rpcid));
             if (Response.result.Equals("world"))
             {
                 return;

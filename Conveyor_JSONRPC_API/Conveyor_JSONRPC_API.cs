@@ -63,9 +63,9 @@ namespace Conveyor_JSONRPC_API
         public enum connectionstatus
         {
             //[StringValue("connected")]
-            connected,
+            CONNECTED,
             //[StringValue("notConnected")]
-            notConnected
+            DISCONNECTED
         }
 
         /*
@@ -236,16 +236,23 @@ namespace Conveyor_JSONRPC_API
          */
         public class printer
         {
-            public string profilename { get; set; }
-            public string displayname { get; set; }
-            public string uniquename { get; set; }
-            public string printertype { get; set; }
+            public string displayName { get; set; }
+            public string name { get; set; }
+            public string printerType { get; set; }
+            public string profile_name { get; set; }
+            public bool hasHeatedPlatform { get; set; }
+            public string toolhead_target_temperature { get; set; }
+            public int[] build_volume { get; set; }
+            public connectionstatus state { get; set; }
+            public string driver_name { get; set; }
+            public string port_name { get; set; }
+            public tooltemperatures temperature { get; set; }
+            public string uniqueName { get; set; }
+            public bool canPrintToFile { get; set; }
+            public string[] machineNames { get; set; }
+            public int numberOfToolheads { get; set; }
+            public string firmware_version { get; set; }
             public bool canprint { get; set; }
-            public bool canprinttofile { get; set; }
-            public bool hasheatedplatform { get; set; }
-            public int numberoftoolheads { get; set; }
-            public connectionstatus connectionstatus { get; set; }
-            public  tooltemperatures temperature { get; set; }
         }
 
         /*
