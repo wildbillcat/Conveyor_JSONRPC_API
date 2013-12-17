@@ -46,6 +46,7 @@ namespace Conveyor_JSONRPC_API_Tests
         {
             rpcid++;
             JsonRpcResult<printer[]> Response = CallMethod<printer[]>(ServerAPI.GetPrinters(rpcid));
+            
             if (Response.result.Equals("world"))
             {
                 return;
@@ -65,7 +66,14 @@ namespace Conveyor_JSONRPC_API_Tests
             int bytesRead = dataStream.Read(bytesToRead, 0, bytesToRead.Length);
             string Reply = Encoding.ASCII.GetString(bytesToRead, 0, bytesRead);
             //string Reply = new StreamReader(dataStream).ReadToEnd();
-            return JsonConvert.DeserializeObject<JsonRpcResult<T>>(Reply);
+            JsonSerializerSettings val = new JsonSerializerSettings();
+
+            val.Error = delegate(object sender, ErrorEventArgs args)
+            {
+                args.ErrorContext.Handled = true;
+            };
+                
+            return JsonConvert.DeserializeObject<JsonRpcResult<T>>(Reply, val);
         }
     }
 }

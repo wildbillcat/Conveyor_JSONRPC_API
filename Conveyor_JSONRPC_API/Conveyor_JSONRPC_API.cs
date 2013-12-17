@@ -392,7 +392,6 @@ namespace Conveyor_JSONRPC_API
          */
         public class tooltemperatures
         {
-            //public string value { get; set; }
             public tool[] tools { get; set; }
             public tool[] heated_platforms { get; set; }
         }
