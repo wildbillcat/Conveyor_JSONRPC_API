@@ -45,16 +45,40 @@ namespace Conveyor_JSONRPC_API_Tests
         public void GetPrinters()
         {
             rpcid++;
-            JsonRpcResult<printer[]> Response = CallMethod<printer[]>(ServerAPI.GetPrinters(rpcid));
+            JsonSerializerSettings val = new JsonSerializerSettings();
+            val.Error = delegate(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
+            {
+                args.ErrorContext.Handled = true;
+            };
+            JsonRpcResult<printer[]> Response = CallMethod<printer[]>(ServerAPI.GetPrinters(rpcid), val);
             
-            if (Response.result.Equals("world"))
+            if (Response.result.Length > 0)
+            {
+                return;
+            }
+            else
+            {
+                Assert.Fail();
+            }
+        }
+        [TestMethod]
+        public void GetJobs()
+        {
+            rpcid++;
+            string RPCGetJobs = ServerAPI.GetJobs(rpcid);
+            JsonRpcResult<job[]> Response = CallMethod<job[]>(RPCGetJobs);
+            if (Response.result.Length > 0)
             {
                 return;
             }
             throw (new Exception());
         }
-        
+
         public JsonRpcResult<T> CallMethod<T>(string JsonMethod)
+        {
+            return CallMethod<T>(JsonMethod, new JsonSerializerSettings());
+        }
+        public JsonRpcResult<T> CallMethod<T>(string JsonMethod, JsonSerializerSettings val)
         {
             byte[] byteArray = Encoding.ASCII.GetBytes(JsonMethod);
             dataStream.Write(byteArray, 0, byteArray.Length);
@@ -65,14 +89,7 @@ namespace Conveyor_JSONRPC_API_Tests
             byte[] bytesToRead = new byte[tcpClient.ReceiveBufferSize];
             int bytesRead = dataStream.Read(bytesToRead, 0, bytesToRead.Length);
             string Reply = Encoding.ASCII.GetString(bytesToRead, 0, bytesRead);
-            //string Reply = new StreamReader(dataStream).ReadToEnd();
-            JsonSerializerSettings val = new JsonSerializerSettings();
-
-            val.Error = delegate(object sender, ErrorEventArgs args)
-            {
-                args.ErrorContext.Handled = true;
-            };
-                
+            //string Reply = new StreamReader(dataStream).ReadToEnd();                
             return JsonConvert.DeserializeObject<JsonRpcResult<T>>(Reply, val);
         }
     }

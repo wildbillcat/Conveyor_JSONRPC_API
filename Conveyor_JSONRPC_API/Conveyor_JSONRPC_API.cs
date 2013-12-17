@@ -248,7 +248,7 @@ namespace Conveyor_JSONRPC_API
             public string port_name { get; set; }
             public tooltemperatures temperature { get; set; }
             public string uniqueName { get; set; }
-            public bool canPrintToFile { get; set; }
+            public bool? canPrintToFile { get; set; }
             public string[] machineNames { get; set; }
             public int numberOfToolheads { get; set; }
             public string firmware_version { get; set; }
@@ -392,8 +392,8 @@ namespace Conveyor_JSONRPC_API
          */
         public class tooltemperatures
         {
-            public tool[] tools { get; set; }
-            public tool[] heated_platforms { get; set; }
+            public List<tool> tools { get; set; }
+            public List<tool> heated_platforms { get; set; }
         }
 
         /*
@@ -724,10 +724,7 @@ namespace Conveyor_JSONRPC_API
          */
         public static string GetJobs(int rpcid)
         {
-            throw new NotImplementedException();
-            List<string> Params = new List<string>();
-            //Params.Add();
-            return BuildRPCString(rpcid, "print");
+            return BuildRPCString(rpcid, "getjobs");
         }
 
         /*
