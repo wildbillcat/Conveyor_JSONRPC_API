@@ -35,6 +35,32 @@ namespace Conveyor_JSONRPC_API
          */
 
         /*
+         * {
+         * "name": "COM3:9153:45077", 
+         * "vid": 9153, 
+         * "pid": 45077, 
+         * "label": "Replicator 2", 
+         * "driver_profiles": {
+         *      "s3g": ["Replicator2X", "Replicator2"]}, 
+         * "iserial": "7523733353635171E0D1", 
+         * "path": "COM3", 
+         * "type": "SERIAL"
+         * }
+         */
+        public class port
+        {
+            public string name { get; set; }
+            public int vid { get; set; }
+            public int pid { get; set; }
+            public string label { get; set; }
+            public IDictionary<string, string[]> driver_profiles { get; set; }
+            public string iserial { get; set; }
+            public string path { get; set; }
+            public string type { get; set; }
+        }
+
+       
+        /*
          *  archive-level :: (string)
          *  
          * An archive level.
@@ -71,20 +97,34 @@ namespace Conveyor_JSONRPC_API
         /*
          *  job
          *  
-         * { "rpcid": (job-rpcid)
-         * , "name": (job-name)
-         * , "state": (job-state)
-         * , "conclusion": (job-conclusion)
-         * , "currentstep": (job-step)
-         * }
+         *{
+         *"machine_name": "23C1:B015:75237333536351713081", 
+         *"failure": null, 
+         *"profile_name": "Replicator2", 
+         *"port_name": "COM3:9153:45077", 
+         *"id": 36, 
+         *"name": "D2", 
+         *"state": "RUNNING", 
+         *"driver_name": "s3g", 
+         *"progress": {
+         *"progress": 34, 
+         *"name": "print"}, 
+         *"type": "PRINT_JOB", 
+         *"conclusion": null
+         *}
          */
         public class job
         {
-            public int rpcid { get; set; }
-            public string name { get; set; }
+            public string machine_name { get; set; }
+            public string failure { get; set; }
+            public string profile_name { get; set; }
+            public string port_name { get; set; }
+            public int id { get; set; }
+            public string name { get; set; } //name of the Print Job
             public jobstate state { get; set; }
+            public string driver_name { get; set; }
+            public jobstep progress { get; set; }
             public jobconclusion conclusion { get; set; }
-            public jobstep concurrentstep { get; set; }
         }
 
         /*
@@ -164,7 +204,7 @@ namespace Conveyor_JSONRPC_API
         public class jobstep
         {
             public jobstepname name { get; set; }
-            public double progress { get; set; }
+            public int progress { get; set; }
         }
 
         /*
@@ -392,8 +432,8 @@ namespace Conveyor_JSONRPC_API
          */
         public class tooltemperatures
         {
-            public List<tool> tools { get; set; }
-            public List<tool> heated_platforms { get; set; }
+            public tool[] tools { get; set; }
+            public tool[] heated_platforms { get; set; }
         }
 
         /*
@@ -506,10 +546,10 @@ namespace Conveyor_JSONRPC_API
 
         private static string BuildRPCString(int rpcid, string MethodName)
         {
-            return BuildRPCString(rpcid, MethodName, new List<object>());
+            return BuildRPCString(rpcid, MethodName, new List<JObject>());
         }
 
-        private static string BuildRPCString(int rpcid, string MethodName, List<object> Params)
+        private static string BuildRPCString(int rpcid, string MethodName, List<JObject> Params)
         {
             JObject rpcCall = new JObject();
             rpcCall.Add(new JProperty("jsonrpc", "2.0"));
@@ -652,8 +692,8 @@ namespace Conveyor_JSONRPC_API
          */
         public static string CancelJob(int rpcid, int jobid)
         {
-            List<object> Params = new List<object>();
-            Params.Add(jobid.ToString());
+            List<JProperty> Params = new List<JProperty>();
+            Params.Add(new JProperty("jobid", jobid.ToString()));
             return BuildRPCString(rpcid, "canceljob", Params);
         }
 
@@ -668,8 +708,8 @@ namespace Conveyor_JSONRPC_API
          */
         public static string GetPrinter(int rpcid, string uniquename)
         {
-            List<object> Params = new List<object>();
-            Params.Add(uniquename);
+            List<JProperty> Params = new List<JProperty>();
+            Params.Add(new JProperty("uniquename", uniquename));
             return BuildRPCString(rpcid, "getprinter", Params);
         }
 
@@ -728,6 +768,47 @@ namespace Conveyor_JSONRPC_API
         }
 
         /*
+         * getports
+         * 
+         * This method returns the list of jobs.
+         * 
+         * params
+         * 
+         * {
+         * }
+         * 
+         * result
+         * 
+         * [ (job)
+         * , ...
+         * ]
+         */
+        public static string GetPorts(int rpcid)
+        {
+            return BuildRPCString(rpcid, "getports");
+        }
+
+        /*
+        * "method":"connect",
+        * "params":{
+        * "driver_name":null,
+        * "machine_name":null,
+        * "persistent":false,
+        * "port_name":"COM3:9153:45077",
+        * "profile_name":null}
+        */
+        public static string Connect(int rpcid, string driver_name, string machine_name, bool persistent, string port_name, string profile_name)
+        {
+            List<JProperty> Params = new List<JProperty>();
+            Params.Add(new JProperty("driver_name", driver_name));
+            Params.Add(new JProperty("machine_name", machine_name));
+            Params.Add(new JProperty("persistent", persistent));
+            Params.Add(new JProperty("port_name", port_name));
+            Params.Add(new JProperty("profile_name", profile_name));
+            return BuildRPCString(rpcid, "connect", Params);
+        }
+
+        /*
          * dir
          */
         public static string Dir(int rpcid)
@@ -762,10 +843,10 @@ namespace Conveyor_JSONRPC_API
 
         private static string BuildRPCString(int rpcid, string MethodName)
         {
-            return BuildRPCString(rpcid, MethodName, new List<object>());
+            return BuildRPCString(rpcid, MethodName, new List<JProperty>());
         }
 
-        private static string BuildRPCString(int rpcid, string MethodName, List<object> Params)
+        private static string BuildRPCString(int rpcid, string MethodName, List<JProperty> Params)
         {
             JObject rpcCall = new JObject();
             rpcCall.Add(new JProperty("jsonrpc", "2.0"));
@@ -808,6 +889,6 @@ namespace Conveyor_JSONRPC_API
         public double jsonrpc { get; set; }
         //public string result { get; set; }
         public T result { get; set; }
-        public int rpcid { get; set; }
+        public int id { get; set; }
     }
 }

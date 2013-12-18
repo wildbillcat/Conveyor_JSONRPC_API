@@ -12,14 +12,14 @@ using Newtonsoft.Json;
 namespace Conveyor_JSONRPC_API_Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class ServerAPITests
     {
         IPEndPoint ipEndPoint;
         TcpClient tcpClient;
         Stream dataStream;
         int rpcid;
 
-        public UnitTest1()
+        public ServerAPITests()
         {
             ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9999);
             tcpClient = new TcpClient();
@@ -50,7 +50,8 @@ namespace Conveyor_JSONRPC_API_Tests
             {
                 args.ErrorContext.Handled = true;
             };
-            JsonRpcResult<printer[]> Response = CallMethod<printer[]>(ServerAPI.GetPrinters(rpcid), val);
+            string RPCGetPrinters = ServerAPI.GetPrinters(rpcid);
+            JsonRpcResult<printer[]> Response = CallMethod<printer[]>(RPCGetPrinters, val);
             
             if (Response.result.Length > 0)
             {
@@ -62,12 +63,33 @@ namespace Conveyor_JSONRPC_API_Tests
             }
         }
         [TestMethod]
-        public void GetJobs()
+        public job[] GetJobs()
         {
             rpcid++;
             string RPCGetJobs = ServerAPI.GetJobs(rpcid);
             JsonRpcResult<job[]> Response = CallMethod<job[]>(RPCGetJobs);
+            return Response.result;
+        }
+        [TestMethod]
+        public port[] GetPorts()
+        {
+            rpcid++;
+            string RPCGetPorts = ServerAPI.GetPorts(rpcid);
+            JsonRpcResult<port[]> Response = CallMethod<port[]>(RPCGetPorts);
             if (Response.result.Length > 0)
+            {
+                return Response.result;
+            }
+            throw (new Exception());
+        }
+        [TestMethod]
+        public void Connect()
+        {
+            rpcid++;
+            port[] Ports = GetPorts();
+            string RPCConnect = ServerAPI.Connect(rpcid, null, null, false, Ports[0].name, null);
+            JsonRpcResult<printer> Response = CallMethod<printer>(RPCConnect);
+            if (Response.result.port_name.Equals(Ports[0].name))
             {
                 return;
             }
@@ -82,14 +104,9 @@ namespace Conveyor_JSONRPC_API_Tests
         {
             byte[] byteArray = Encoding.ASCII.GetBytes(JsonMethod);
             dataStream.Write(byteArray, 0, byteArray.Length);
-            //StreamWriter writer = new StreamWriter(dataStream);
-            //writer.WriteLine(dataStream);
-            //writer.Flush();
-            //writer.Close();
             byte[] bytesToRead = new byte[tcpClient.ReceiveBufferSize];
             int bytesRead = dataStream.Read(bytesToRead, 0, bytesToRead.Length);
             string Reply = Encoding.ASCII.GetString(bytesToRead, 0, bytesRead);
-            //string Reply = new StreamReader(dataStream).ReadToEnd();                
             return JsonConvert.DeserializeObject<JsonRpcResult<T>>(Reply, val);
         }
     }
