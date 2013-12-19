@@ -880,15 +880,54 @@ namespace Conveyor_JSONRPC_API
     /*
      *  jsonrpcresult
      *  
-     * object to encapsulate messages from the server, which will be formatted in an rpc syntax
+     * object to encapsulate result messages from Conveyor, which will be formatted in an rpc syntax
      * 
      */
     public class JsonRpcResult<T>
     {
-        //Example Reply	"{\"jsonrpc\": \"2.0\", \"result\": \"world\", \"rpcid\": \"2\"}"	string
         public double jsonrpc { get; set; }
-        //public string result { get; set; }
         public T result { get; set; }
         public int id { get; set; }
     }
+
+    /*
+     *  jsonrpcmethod
+     *  
+     * object to encapsulate method messages from Conveyor, which will be formatted in an rpc syntax
+     * 
+     */
+    public class JsonRpcMethod<T>
+    {
+        public double jsonrpc { get; set; }
+        public T PARAMS { get; set; }
+        public string method { get; set; }
+    }
+
+    /*
+     *  jsonerror
+     *  
+     * object to encapsulate error messages from Conveyor, which will be formatted in an rpc syntax
+     * 
+     */
+    public class JsonError<T>
+    {
+        public double jsonrpc { get; set; }
+        public int id { get; set; }
+        public ConveyorError error { get; set; }
+    }
+
+    public class ConveyorError
+    {
+        public string message { get; set; }
+        public int code { get; set; }
+        public Data data { get; set; }
+    }
+
+    public class Data
+    {
+        string[] args { get; set; }
+        string name { get; set; }
+    }
+
+
 }
