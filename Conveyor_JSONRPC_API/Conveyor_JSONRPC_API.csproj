@@ -50,7 +50,12 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="JSON Example Replies\2.4.1\Client\JobAdded.js" />
     <Content Include="JSON Example Replies\2.4.1\Client\JobChanged.js" />
+    <Content Include="JSON Example Replies\2.4.1\Client\MachineStateChanged.js" />
+    <Content Include="JSON Example Replies\2.4.1\Client\MachineTemperatureChanged.js" />
+    <Content Include="JSON Example Replies\2.4.1\Client\PrinterAdded.js" />
+    <Content Include="JSON Example Replies\2.4.1\Client\PrinterRemoved.js" />
     <Content Include="JSON Example Replies\2.4.1\Server\Connect.js" />
     <Content Include="JSON Example Replies\2.4.1\Server\GetJobs.js" />
     <Content Include="JSON Example Replies\2.4.1\Server\GetPorts.js" />
