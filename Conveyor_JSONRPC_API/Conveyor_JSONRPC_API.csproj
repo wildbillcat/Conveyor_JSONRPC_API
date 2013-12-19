@@ -50,10 +50,11 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="JSON Example Replies\2.4.1\Connect.js" />
-    <Content Include="JSON Example Replies\2.4.1\GetJobs.js" />
-    <Content Include="JSON Example Replies\2.4.1\GetPorts.js" />
-    <Content Include="JSON Example Replies\2.4.1\GetPrinters.js" />
+    <Content Include="JSON Example Replies\2.4.1\Client\JobChanged.js" />
+    <Content Include="JSON Example Replies\2.4.1\Server\Connect.js" />
+    <Content Include="JSON Example Replies\2.4.1\Server\GetJobs.js" />
+    <Content Include="JSON Example Replies\2.4.1\Server\GetPorts.js" />
+    <Content Include="JSON Example Replies\2.4.1\Server\GetPrinters.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
