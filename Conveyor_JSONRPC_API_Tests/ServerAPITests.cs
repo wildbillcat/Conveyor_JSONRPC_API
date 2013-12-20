@@ -141,6 +141,7 @@ namespace Conveyor_JSONRPC_API_Tests
             {
                 Assert.Fail();
             }
+            Console.WriteLine(ConveyorJsonReplyParser.GetMethodName(JSON));
         }
 
         [TestMethod]
@@ -152,6 +153,24 @@ namespace Conveyor_JSONRPC_API_Tests
             {
                 Assert.Fail();
             }
+            Console.WriteLine(ConveyorJsonReplyParser.GetResultID(JSON));
+        }
+
+        [TestMethod]
+        public void PortAttached()
+        {
+            string JSON = "{\"params\": {\"name\": \"COM3:9153:45077\", \"vid\": 9153, \"pid\": 45077, \"label\": \"Replicator 2\", \"driver_profiles\": {\"s3g\": [\"Replicator2X\", \"Replicator2\"]}, \"iserial\": \"7523733353635171E0D1\", \"path\": \"COM3\", \"type\": \"SERIAL\"}, \"jsonrpc\": \"2.0\", \"method\": \"port_attached\"}";
+            JsonReplyType Reply = ConveyorJsonReplyParser.ReplyType(JSON);
+            if (Reply != JsonReplyType.Method)
+            {
+                Assert.Fail();
+            }
+            if (!ConveyorJsonReplyParser.GetMethodName(JSON).Equals("port_attached"))
+            {
+                Assert.Fail();
+            }
+            port Port = ClientAPI.Port_Attached(JSON);
+            Console.WriteLine(Port.name);
         }
     }
 }

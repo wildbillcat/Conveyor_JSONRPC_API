@@ -18,4 +18,5 @@
         "numberOfToolheads": 1, 
         "firmware_version": 705, "canPrint": true}, 
     "jsonrpc": "2.0", 
-    "method": "machine_temperature_changed"}
+    "method": "machine_temperature_changed"
+}

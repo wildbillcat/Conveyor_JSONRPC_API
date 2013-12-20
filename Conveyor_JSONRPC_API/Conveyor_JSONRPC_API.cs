@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Conveyor_JSONRPC_API.Types;
 
 namespace Conveyor_JSONRPC_API
 {
@@ -457,46 +458,46 @@ namespace Conveyor_JSONRPC_API
      */
     public static class ClientAPI
     {
+        //JSON Method Names
+        public static string machine_temperature_changed = "machine_temperature_changed";
+        public static string machine_state_changed = "machine_state_changed";
+        public static string jobadded = "jobadded";
+        public static string jobchanged = "jobchanged";
+        public static string port_detached = "port_detached";
+        public static string port_attached = "port_attached";
+
         /*
-         * printeradded
-         * The server invokes this method when a new printer is connected.
+         * machine_temperature_changed
+         * 
+         * The server invokes this method whenever a machine temperature changes.
+         * 
          * params
-         * (printer)
+         * 
+         * (job)
          */
-        public static string PrinterAdded(int rpcid)
+        public static printer Machine_Temperature_Changed(string JSON)
         {
-            throw new NotImplementedException();
-            List<string> Params = new List<string>();
-            //Params.Add();
-            return BuildRPCString(rpcid, "print");
+            JObject JReply = JsonConvert.DeserializeObject<JObject>(JSON);
+            JToken jParams = JReply["params"];
+            printer PRINTER = jParams.ToObject<printer>();
+            return PRINTER;
         }
 
         /*
-         * printerremoved
-         * The server invokes this method when a printer is disconnected.
+         * machine_state_changed
+         * 
+         * The server invokes this method whenever a machine state changes.
+         * 
          * params
-         * (printer)
+         * 
+         * (job)
          */
-        public static string PrinterRemoved(int rpcid)
+        public static printer Machine_State_changed(string JSON)
         {
-            throw new NotImplementedException();
-            List<string> Params = new List<string>();
-            //Params.Add();
-            return BuildRPCString(rpcid, "print");
-        }
-
-        /*
-         * printerchanged
-         * The server invokes this method when a printer changes.
-         * params
-         * (printer)
-         */
-        public static string PrinterChanged(int rpcid)
-        {
-            throw new NotImplementedException();
-            List<string> Params = new List<string>();
-            //Params.Add();
-            return BuildRPCString(rpcid, "print");
+            JObject JReply = JsonConvert.DeserializeObject<JObject>(JSON);
+            JToken jParams = JReply["params"];
+            printer PRINTER = jParams.ToObject<printer>();
+            return PRINTER;
         }
 
         /*
@@ -508,12 +509,12 @@ namespace Conveyor_JSONRPC_API
          * 
          * (job)
          */
-        public static string JobAdded(int rpcid)
+        public static job JobAdded(string JSON)
         {
-            throw new NotImplementedException();
-            List<string> Params = new List<string>();
-            //Params.Add();
-            return BuildRPCString(rpcid, "print");
+            JObject JReply = JsonConvert.DeserializeObject<JObject>(JSON);
+            JToken jParams = JReply["params"];
+            job JOB = jParams.ToObject<job>();
+            return JOB;
         }
 
         /*
@@ -522,12 +523,26 @@ namespace Conveyor_JSONRPC_API
          * params
          * (job)
          */
-        public static string JobChanged(int rpcid)
+        public static job JobChanged(string JSON)
         {
-            throw new NotImplementedException();
-            List<string> Params = new List<string>();
-            //Params.Add();
-            return BuildRPCString(rpcid, "print");
+            JObject JReply = JsonConvert.DeserializeObject<JObject>(JSON);
+            JToken jParams = JReply["params"];
+            job JOB = jParams.ToObject<job>();
+            return JOB;
+        }
+
+        /*
+         * port_attached
+         * The server invokes this method after a job finishes.
+         * params
+         * (job)
+         */
+        public static port Port_Attached(string JSON)
+        {
+            JObject JReply = JsonConvert.DeserializeObject<JObject>(JSON);
+            JToken jParams = JReply["params"];
+            port PORT = jParams.ToObject<port>();
+            return PORT;
         }
 
         /*
@@ -536,48 +551,14 @@ namespace Conveyor_JSONRPC_API
          * params
          * (job)
          */
-        public static string JobRemoved(int rpcid)
+        public static string Port_Detached(string JSON)
         {
-            throw new NotImplementedException();
-            List<string> Params = new List<string>();
-            //Params.Add();
-            return BuildRPCString(rpcid, "print");
+            JObject JReply = JsonConvert.DeserializeObject<JObject>(JSON);
+            JToken jParams = JReply["params"];
+            string PORT_NAME = jParams.Value<string>("port_name");
+            return PORT_NAME;
         }
 
-        private static string BuildRPCString(int rpcid, string MethodName)
-        {
-            return BuildRPCString(rpcid, MethodName, new List<JObject>());
-        }
-
-        private static string BuildRPCString(int rpcid, string MethodName, List<JObject> Params)
-        {
-            JObject rpcCall = new JObject();
-            rpcCall.Add(new JProperty("jsonrpc", "2.0"));
-            rpcCall.Add(new JProperty("id", rpcid.ToString()));
-            rpcCall.Add(new JProperty("method", MethodName));
-            //rpcCall.Add(new JProperty("method", "add"));
-
-
-            // params is a collection values which the method requires..
-            if (Params.Count == 0)
-            {
-                rpcCall.Add(new JProperty("params", new JArray()));
-            }
-            else
-            {
-                JArray props = new JArray();
-                // add the props in the reverse order!
-                foreach (string param in Params)
-                {
-                    // add the params
-                    props.Add(param);
-                }
-                rpcCall.Add(new JProperty("params", props));
-            }
-
-            // serialize json for the request
-            return JsonConvert.SerializeObject(rpcCall);
-        }
     }
 
     /*
@@ -891,19 +872,6 @@ namespace Conveyor_JSONRPC_API
     }
 
     /*
-     *  jsonrpcmethod
-     *  
-     * object to encapsulate method messages from Conveyor, which will be formatted in an rpc syntax
-     * 
-     */
-    public class JsonRpcMethod<T>
-    {
-        public double jsonrpc { get; set; }
-        public T PARAMS { get; set; }
-        public string method { get; set; }
-    }
-
-    /*
      *  jsonerror
      *  
      * object to encapsulate error messages from Conveyor, which will be formatted in an rpc syntax
@@ -962,6 +930,20 @@ namespace Conveyor_JSONRPC_API
             }
             catch (Exception e) { }
             return JsonReplyType.Invalid;
+        }
+
+        public static string GetMethodName(string JSON)
+        {
+            JObject JReply = JsonConvert.DeserializeObject<JObject>(JSON);
+            string MethodName = JReply.Value<string>("method");
+            return MethodName;
+        }
+
+        public static int GetResultID(string JSON)
+        {
+            JObject JReply = JsonConvert.DeserializeObject<JObject>(JSON);
+            int ResultID = JReply.Value<int>("id");
+            return ResultID;
         }
     }
 
