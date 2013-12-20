@@ -916,7 +916,7 @@ namespace Conveyor_JSONRPC_API
                         {
                             return JsonReplyType.Error;
                         }
-                        else if (Prop.Name.Equals("method"))
+                        else if (Prop.Name.Equals("params"))
                         {
                             return JsonReplyType.Method;
                         }
