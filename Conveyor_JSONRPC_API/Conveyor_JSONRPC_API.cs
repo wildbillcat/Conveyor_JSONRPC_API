@@ -929,5 +929,40 @@ namespace Conveyor_JSONRPC_API
         string name { get; set; }
     }
 
+    public enum JsonReplyType
+    {
+        Error, Method, Result, Invalid
+    }
+
+    public static class ConveyorJsonReplyParser
+    {
+        public static JsonReplyType ReplyType(string Reply){
+            try
+            {
+                JObject JReply = JsonConvert.DeserializeObject<JObject>(Reply);
+                foreach(JToken J in JReply.Children()){
+                    if (J != null)
+                    {
+                        JProperty Prop = (JProperty)J;
+                        if (Prop.Name.Equals("error"))
+                        {
+                            return JsonReplyType.Error;
+                        }
+                        else if (Prop.Name.Equals("method"))
+                        {
+                            return JsonReplyType.Method;
+                        }
+                        else if (Prop.Name.Equals("result"))
+                        {
+                            return JsonReplyType.Result;
+                        }
+                    }
+                }
+
+            }
+            catch (Exception e) { }
+            return JsonReplyType.Invalid;
+        }
+    }
 
 }

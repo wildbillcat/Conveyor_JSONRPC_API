@@ -109,5 +109,49 @@ namespace Conveyor_JSONRPC_API_Tests
             string Reply = Encoding.ASCII.GetString(bytesToRead, 0, bytesRead);
             return JsonConvert.DeserializeObject<JsonRpcResult<T>>(Reply, val);
         }
+
+        [TestMethod]
+        public void ParseInvalid()
+        {
+            string JSON = @"{object:sillyness}";
+            JsonReplyType Reply = ConveyorJsonReplyParser.ReplyType(JSON);
+            if (Reply != JsonReplyType.Invalid)
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod]
+        public void ParseError()
+        {
+            string JSON = "{\"jsonrpc\" : \"2.0\", \"id\": 5, \"error\": {\"message\": \"uncaught exception\", \"code\": -32000, \"data\": {\"args\": [\"COM3:9153:45077\"], \"name\": \"UnknownPortError\"}}}";
+            JsonReplyType Reply = ConveyorJsonReplyParser.ReplyType(JSON);
+            if (Reply != JsonReplyType.Error)
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod]
+        public void ParseMethod()
+        {
+            string JSON = "{\"params\": {\"displayName\": \"The Replicator 2\", \"name\": \"23C1:B015:7523733353635171E0D1\", \"printerType\": \"The Replicator 2\", \"profile_name\": \"Replicator2\", \"hasHeatedPlatform\": false, \"toolhead_target_temperature\": [0], \"build_volume\": [285, 153, 155], \"state\": \"IDLE\", \"driver_name\": \"s3g\", \"port_name\": \"COM3:9153:45077\", \"temperature\": {\"heated_platforms\": [], \"tools\": {\"0\": 104}}, \"uniqueName\": \"23C1:B015:7523733353635171E0D1\", \"canPrintToFile\": true, \"machineNames\": [\"TheReplicator2\"], \"numberOfToolheads\": 1, \"firmware_version\": 705, \"canPrint\": true}, \"jsonrpc\": \"2.0\", \"method\": \"machine_state_changed\"}";
+            JsonReplyType Reply = ConveyorJsonReplyParser.ReplyType(JSON);
+            if (Reply != JsonReplyType.Method)
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod]
+        public void ParseResult()
+        {
+            string JSON = "{\"jsonrpc\": \"2.0\", \"result\": [{\"machine_name\": \"23C1:B015:7523733353635171E0D1\", \"failure\": null, \"profile_name\": \"Replicator2\", \"port_name\": \"COM3:9153:45077\", \"id\": 1, \"name\": \"Mr_Jaws\", \"state\": \"STOPPED\", \"driver_name\": \"s3g\", \"progress\": {\"progress\": 9, \"name\": \"print\"}, \"type\": \"PRINT_JOB\", \"conclusion\": \"CANCELED\"}], \"id\": 3}"; 
+            JsonReplyType Reply = ConveyorJsonReplyParser.ReplyType(JSON);
+            if (Reply != JsonReplyType.Result)
+            {
+                Assert.Fail();
+            }
+        }
     }
 }
